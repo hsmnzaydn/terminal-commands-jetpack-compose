@@ -1,5 +1,6 @@
 package com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components
 
+import android.icu.text.CaseMap
 import android.util.Log
 import android.view.View
 import androidx.compose.foundation.Image
@@ -31,13 +32,14 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun AppBar(
+    title: String,
     isShowSearchField: Boolean,
     query: (String) -> Unit,
     clickSearchIcon: () -> Unit
 ) {
 
     Column() {
-        AppBarPreview(isShowSearchField)
+        AppBarPreview(title,isShowSearchField)
         Divider(color = Color.White, thickness = 1.dp)
 
     }
@@ -45,7 +47,7 @@ fun AppBar(
 
 @Preview
 @Composable
-fun AppBarPreview(isShowSearchField: Boolean? = true) {
+fun AppBarPreview(title: String? = "Category",isShowSearchField: Boolean? = true) {
     var text by remember { mutableStateOf("") }
     var tempIsShowSearchField = remember {
         mutableStateOf(isShowSearchField)

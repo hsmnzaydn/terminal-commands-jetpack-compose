@@ -60,6 +60,7 @@ fun SplashContent(navController: NavController,splashViewModel: SplashViewModel)
         delay(500)
         when(splashViewModel.user.component1().status){
             CoreDataState.Status.SUCCESS ->{
+                navController.popBackStack()
                 navController.navigate("categorylist")
             }
         }

@@ -7,12 +7,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hsmnzaydn.terminalcommandsjetpackcompose.data.CategoryResponse
+import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.data.entities.CategoryResponse
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.AppBar
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.LoadingRecipeListShimmer
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
@@ -30,7 +31,7 @@ fun CategoryListScreen(
             .background(Background)
     ) {
 
-        AppBar(false, {
+        AppBar("Category",false, {
 
         }, {
 
@@ -42,23 +43,33 @@ fun CategoryListScreen(
 
 @Composable
 fun CategoryListContent(viewModel: CategoryListViewModel) {
-    if (viewModel.categoryList.value.size == 0) {
-        LoadingRecipeListShimmer(imageHeight = 80.dp)
-    } else {
-        LazyColumn(
-            Modifier.padding(top = 32.dp)
-        ) {
-            items(viewModel.categoryList.value) { item ->
-                ListItemOfCategory(categoryResponse = item)
+    with(viewModel.categoryList){
+        when(this.value.status){
+            CoreDataState.Status.LOADING ->{
+                LoadingRecipeListShimmer(imageHeight = 80.dp)
+            }
+            CoreDataState.Status.SUCCESS ->{
+
+                LazyColumn(
+                    Modifier.padding(top = 32.dp)
+                ) {
+                    value.data?.let {
+                        items(it) { item ->
+                            ListItemOfCategory(category = item)
+                        }
+                    }
+
+                }
             }
         }
     }
 
 
+
 }
 
 @Composable
-fun ListItemOfCategory(categoryResponse: CategoryResponse) {
+fun ListItemOfCategory(category: Category) {
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -74,7 +85,7 @@ fun ListItemOfCategory(categoryResponse: CategoryResponse) {
 
         ) {
             Text(
-                text = categoryResponse.title ?: "",
+                text = category.categoryName,
                 color = Color.White,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )

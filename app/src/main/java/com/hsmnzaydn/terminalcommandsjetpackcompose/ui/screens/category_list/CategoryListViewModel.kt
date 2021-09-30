@@ -4,21 +4,26 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsmnzaydn.terminalcommandsjetpackcompose.data.CategoryResponse
+import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.data.entities.CategoryResponse
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.usecase.CategoriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoryListViewModel @Inject constructor(): ViewModel(){
-    val categoryList: MutableState<List<CategoryResponse>> = mutableStateOf(listOf())
+class CategoryListViewModel @Inject constructor(private val categoryUseCase: CategoriesUseCase): ViewModel(){
+    val categoryList: MutableState<CoreDataState<List<Category>>> = mutableStateOf(CoreDataState.loading())
 
     fun fetchCategoryList(){
         viewModelScope.launch {
-            delay(5000L)
-            categoryList.value = listOf<CategoryResponse>(CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse(),CategoryResponse())
-
+            categoryUseCase.getCategories().collect {
+                delay(1200)
+                categoryList.value = it
+            }
         }
     }
 }

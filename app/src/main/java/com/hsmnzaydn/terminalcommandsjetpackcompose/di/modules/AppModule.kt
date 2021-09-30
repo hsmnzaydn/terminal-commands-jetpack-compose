@@ -35,12 +35,12 @@ class AppModule {
 
                     var request: Request =
                         chain.request().newBuilder()
-                            .addHeader("Authorization", Config.authorazationKey)
+                            .addHeader("Authorization", "Bearer ${Config.authorazationKey}")
                             .addHeader("Accept", "application/json")
                             .addHeader("Accept-Encoding", "gzip, deflate")
                             .addHeader("User-Agent", "runscope/0.1")
                             .addHeader("Content-Type", "application/json")
-                            .addHeader("Language", "TR")
+                            .addHeader("Language", "ENG")
                             .build()
 
                     return chain.proceed(request)

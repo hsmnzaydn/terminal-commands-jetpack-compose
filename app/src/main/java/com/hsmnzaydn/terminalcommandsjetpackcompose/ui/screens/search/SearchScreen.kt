@@ -21,7 +21,7 @@ fun SearchScreen(
             .fillMaxWidth(1f)
             .background(Background)
     ) {
-        AppBar(true, {
+        AppBar("",true, {
 
         }, {
 
