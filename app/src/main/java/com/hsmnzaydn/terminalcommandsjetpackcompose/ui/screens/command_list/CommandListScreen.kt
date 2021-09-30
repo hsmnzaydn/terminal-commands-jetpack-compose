@@ -1,6 +1,5 @@
-package com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.category_list
+package com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.command_list
 
-import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,18 +13,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
-import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.data.entities.CategoryResponse
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Command
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.AppBar
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.LoadingRecipeListShimmer
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 
 @Composable
-fun CategoryListScreen(
+fun CommandListScreen(
     navController: NavController,
-    categoryListViewModel: CategoryListViewModel
+    commandListViewModel: CommandListViewModel,
+    categoryId: String
 ) {
-    categoryListViewModel.fetchCategoryList()
+    commandListViewModel.fetchCommands(categoryId)
     Column(
         modifier = Modifier
             .fillMaxHeight(1f)
@@ -33,12 +33,12 @@ fun CategoryListScreen(
             .background(Background)
     ) {
 
-        AppBar("Category",false, {
+        AppBar("Commands",false, {
+
         }, {
 
         })
-        CategoryListContent(categoryListViewModel,{
-            navController.navigate("commandlist/${it}")
+        CommandListContent(commandListViewModel,{
 
         })
 
@@ -46,7 +46,7 @@ fun CategoryListScreen(
 }
 
 @Composable
-fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(categoryId:String) -> Unit) {
+fun CommandListContent(viewModel: CommandListViewModel, clickListener:(categoryId:String) -> Unit) {
     with(viewModel.categoryList){
         when(this.value.status){
             CoreDataState.Status.LOADING ->{
@@ -59,7 +59,7 @@ fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(category
                 ) {
                     value.data?.let {
                         items(it) { item ->
-                            ListItemOfCategory(category = item,clickListener)
+                            ListItemOfCommands(command = item,clickListener)
                         }
                     }
 
@@ -74,7 +74,7 @@ fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(category
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListItemOfCategory(category: Category,clickListener:(categoryId:String) -> Unit) {
+fun ListItemOfCommands(command: Command, clickListener:(categoryId:String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -83,7 +83,6 @@ fun ListItemOfCategory(category: Category,clickListener:(categoryId:String) -> U
         elevation = 4.dp,
         backgroundColor = Color.Black,
         onClick = {
-            clickListener(category.categoryId)
         }
     ) {
         Column(
@@ -93,7 +92,7 @@ fun ListItemOfCategory(category: Category,clickListener:(categoryId:String) -> U
 
         ) {
             Text(
-                text = category.categoryName,
+                text = command.title,
                 color = Color.White,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
             )

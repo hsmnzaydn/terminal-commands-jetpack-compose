@@ -64,7 +64,7 @@ fun AppBarPreview(title: String? = "Category",isShowSearchField: Boolean? = true
         tempIsShowSearchField.component1()?.let {
             if (!it) {
                 Text(
-                    text = "Categories",
+                    text = title?:"",
                     color = Color.White,
                     modifier = Modifier
                         .padding(start = 16.dp, bottom = 16.dp)
