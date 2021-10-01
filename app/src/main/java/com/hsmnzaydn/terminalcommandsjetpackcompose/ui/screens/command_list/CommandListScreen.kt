@@ -8,8 +8,11 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
@@ -17,6 +20,7 @@ import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.e
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Command
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.AppBar
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.LoadingRecipeListShimmer
+import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.showDialog
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 
 @Composable
@@ -33,12 +37,12 @@ fun CommandListScreen(
             .background(Background)
     ) {
 
-        AppBar("Commands",false, {
+        AppBar("Commands", false, {
 
         }, {
 
         })
-        CommandListContent(commandListViewModel,{
+        CommandListContent(commandListViewModel, {
 
         })
 
@@ -46,20 +50,23 @@ fun CommandListScreen(
 }
 
 @Composable
-fun CommandListContent(viewModel: CommandListViewModel, clickListener:(categoryId:String) -> Unit) {
-    with(viewModel.categoryList){
-        when(this.value.status){
-            CoreDataState.Status.LOADING ->{
+fun CommandListContent(
+    viewModel: CommandListViewModel,
+    clickListener: (categoryId: String) -> Unit
+) {
+    with(viewModel.categoryList) {
+        when (this.value.status) {
+            CoreDataState.Status.LOADING -> {
                 LoadingRecipeListShimmer(imageHeight = 80.dp)
             }
-            CoreDataState.Status.SUCCESS ->{
+            CoreDataState.Status.SUCCESS -> {
 
                 LazyColumn(
                     Modifier.padding(top = 32.dp)
                 ) {
                     value.data?.let {
                         items(it) { item ->
-                            ListItemOfCommands(command = item,clickListener)
+                            ListItemOfCommands(command = item, clickListener)
                         }
                     }
 
@@ -69,12 +76,18 @@ fun CommandListContent(viewModel: CommandListViewModel, clickListener:(categoryI
     }
 
 
-
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListItemOfCommands(command: Command, clickListener:(categoryId:String) -> Unit) {
+fun ListItemOfCommands(command: Command, clickListener: (categoryId: String) -> Unit) {
+    val showDialog = remember {
+        mutableStateOf(false)
+    }
+
+    if (showDialog.value) {
+        showDialog(command.title,command.description)
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -83,6 +96,8 @@ fun ListItemOfCommands(command: Command, clickListener:(categoryId:String) -> Un
         elevation = 4.dp,
         backgroundColor = Color.Black,
         onClick = {
+
+            showDialog.value = true
         }
     ) {
         Column(
@@ -95,6 +110,12 @@ fun ListItemOfCommands(command: Command, clickListener:(categoryId:String) -> Un
                 text = command.title,
                 color = Color.White,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+            )
+            Text(
+                text = command.description,
+                color = Color.Gray,
+                modifier = Modifier.padding(start = 8.dp, top = 4.dp),
+                maxLines = 2, overflow = TextOverflow.Ellipsis
             )
         }
     }

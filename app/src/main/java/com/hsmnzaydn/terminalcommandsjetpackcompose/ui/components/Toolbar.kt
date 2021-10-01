@@ -39,7 +39,7 @@ fun AppBar(
 ) {
 
     Column() {
-        AppBarPreview(title,isShowSearchField)
+        AppBarPreview(title, isShowSearchField)
         Divider(color = Color.White, thickness = 1.dp)
 
     }
@@ -47,7 +47,7 @@ fun AppBar(
 
 @Preview
 @Composable
-fun AppBarPreview(title: String? = "Category",isShowSearchField: Boolean? = true) {
+fun AppBarPreview(title: String? = "Category", isShowSearchField: Boolean? = true) {
     var text by remember { mutableStateOf("") }
     var tempIsShowSearchField = remember {
         mutableStateOf(isShowSearchField)
@@ -61,10 +61,18 @@ fun AppBarPreview(title: String? = "Category",isShowSearchField: Boolean? = true
             .padding(top = 8.dp)
 
     ) {
+        Image(
+            painter = painterResource(R.drawable.ic_back),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(start = 16.dp, bottom = 16.dp,top = 24.dp)
+                .align(Alignment.TopStart)
+        )
+
         tempIsShowSearchField.component1()?.let {
             if (!it) {
                 Text(
-                    text = title?:"",
+                    text = title ?: "",
                     color = Color.White,
                     modifier = Modifier
                         .padding(start = 16.dp, bottom = 16.dp)
@@ -116,8 +124,7 @@ fun AppBarPreview(title: String? = "Category",isShowSearchField: Boolean? = true
                         .focusable()
                         .fillMaxWidth()
                         .background(Color.Transparent)
-                        .align(Alignment.BottomStart)
-                       ,
+                        .align(Alignment.BottomStart),
                     colors = TextFieldDefaults.textFieldColors(
                         textColor = Color.White,
                         backgroundColor = Color.Transparent,
