@@ -12,8 +12,6 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.category_list.CategoryListScreen
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.command_list.CommandListScreen
-import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.search.SearchScreen
-import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.search.SearchViewModel
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.splash.SplashScreen
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.TerminalCommandsJetpackComposeTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,12 +49,12 @@ class MainActivity : ComponentActivity() {
                             it.arguments?.getString("categoryId", "1")?:""
                         )
                     }
-                    composable("search") {
+                  /*  composable("search") {
                         SearchScreen(
                             navController = navController,
                             searchViewModel = hiltViewModel<SearchViewModel>()
                         )
-                    }
+                    }*/
                 })
 
             }

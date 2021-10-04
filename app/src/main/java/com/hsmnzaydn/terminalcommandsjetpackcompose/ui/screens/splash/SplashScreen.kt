@@ -76,7 +76,7 @@ fun SplashContent(navController: NavController,splashViewModel: SplashViewModel)
     ) {
         Image(painter = painterResource(id = R.drawable.logo), contentDescription = null)
         Text(
-            text = "Terminal Commands",
+            text = "Terminal commands",
             fontSize = 30.sp,
             color = Color.White,
             fontWeight = FontWeight.Bold,

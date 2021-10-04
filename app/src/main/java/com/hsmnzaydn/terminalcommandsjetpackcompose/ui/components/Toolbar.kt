@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.R
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 import kotlinx.coroutines.runBlocking
@@ -33,21 +34,28 @@ import kotlinx.coroutines.runBlocking
 @Composable
 fun AppBar(
     title: String,
+    navigationController: NavController,
     isShowSearchField: Boolean,
+    isShowBackButton: Boolean,
     query: (String) -> Unit,
     clickSearchIcon: () -> Unit
 ) {
 
     Column() {
-        AppBarPreview(title, isShowSearchField)
+        AppBarPreview(title, navigationController, isShowSearchField, isShowBackButton,query)
         Divider(color = Color.White, thickness = 1.dp)
 
     }
 }
 
-@Preview
 @Composable
-fun AppBarPreview(title: String? = "Category", isShowSearchField: Boolean? = true) {
+fun AppBarPreview(
+    title: String? = "Category",
+    navigationController: NavController,
+    isShowSearchField: Boolean? = true,
+    isShowBackButton: Boolean? = true,
+    query: (String) -> Unit
+) {
     var text by remember { mutableStateOf("") }
     var tempIsShowSearchField = remember {
         mutableStateOf(isShowSearchField)
@@ -61,13 +69,22 @@ fun AppBarPreview(title: String? = "Category", isShowSearchField: Boolean? = tru
             .padding(top = 8.dp)
 
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_back),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(start = 16.dp, bottom = 16.dp,top = 24.dp)
-                .align(Alignment.TopStart)
-        )
+        isShowBackButton?.let {
+            if (it) {
+                Image(
+                    painter = painterResource(R.drawable.ic_back),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 16.dp, top = 24.dp)
+                        .align(Alignment.TopStart)
+                        .clickable {
+                            navigationController.navigateUp()
+                        }
+                )
+            }
+        }
+
+
 
         tempIsShowSearchField.component1()?.let {
             if (!it) {
@@ -88,7 +105,6 @@ fun AppBarPreview(title: String? = "Category", isShowSearchField: Boolean? = tru
                         .padding(end = 16.dp, bottom = 16.dp)
                         .clickable(enabled = true, onClick = {
                             tempIsShowSearchField.value = true
-                            // clickSearchIcon.invoke()
                         })
                         .align(Alignment.BottomEnd)
                 )
@@ -96,7 +112,7 @@ fun AppBarPreview(title: String? = "Category", isShowSearchField: Boolean? = tru
                 TextField(
                     value = text, onValueChange = {
                         text = it
-                        //query.invoke(it)
+                        query.invoke(it)
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,

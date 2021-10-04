@@ -1,5 +1,6 @@
 package com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.command_list
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,15 +13,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Command
-import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.AppBar
-import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.LoadingRecipeListShimmer
-import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.showDialog
+import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.*
+import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.category_list.CategoryListContent
+import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.category_list.CategoryListViewModel
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 
 @Composable
@@ -29,6 +31,10 @@ fun CommandListScreen(
     commandListViewModel: CommandListViewModel,
     categoryId: String
 ) {
+    val isFetchCommandList = remember {
+        mutableStateOf(false)
+    }
+
     commandListViewModel.fetchCommands(categoryId)
     Column(
         modifier = Modifier
@@ -37,88 +43,69 @@ fun CommandListScreen(
             .background(Background)
     ) {
 
-        AppBar("Commands", false, {
-
+        AppBar("commands", navController,false,true, {
+            if(it.length == 0){
+                isFetchCommandList.value = false
+            }else{
+                isFetchCommandList.value = true
+                commandListViewModel.fetchSearchComamnds(it)
+            }
         }, {
 
         })
-        CommandListContent(commandListViewModel, {
 
-        })
+        if(isFetchCommandList.value){
+            SearchCommandListContent(viewModel = commandListViewModel)
+
+        }else{
+            CommandListContent(commandListViewModel)
+
+        }
+
 
     }
 }
 
 @Composable
-fun CommandListContent(
-    viewModel: CommandListViewModel,
-    clickListener: (categoryId: String) -> Unit
-) {
-    with(viewModel.categoryList) {
+fun CommandListContent(viewModel: CommandListViewModel){
+    with(viewModel.commandList) {
         when (this.value.status) {
             CoreDataState.Status.LOADING -> {
                 LoadingRecipeListShimmer(imageHeight = 80.dp)
             }
             CoreDataState.Status.SUCCESS -> {
-
-                LazyColumn(
-                    Modifier.padding(top = 32.dp)
-                ) {
-                    value.data?.let {
-                        items(it) { item ->
-                            ListItemOfCommands(command = item, clickListener)
-                        }
-                    }
-
+                this.value.data?.let {
+                    CommandLazyColumn(commandList = it)
                 }
+            }
+            else -> {
+                Toast.makeText(LocalContext.current,value.message?:"", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchCommandListContent(
+    viewModel: CommandListViewModel
+) {
+    with(viewModel.commandList) {
+        when (this.value.status) {
+            CoreDataState.Status.LOADING -> {
+                LoadingRecipeListShimmer(imageHeight = 80.dp)
+            }
+            CoreDataState.Status.SUCCESS -> {
+                this.value.data?.let {
+                    CommandLazyColumn(commandList = it)
+                }
+            }
+            else -> {
+                Toast.makeText(LocalContext.current,value.message?:"",Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun ListItemOfCommands(command: Command, clickListener: (categoryId: String) -> Unit) {
-    val showDialog = remember {
-        mutableStateOf(false)
-    }
-
-    if (showDialog.value) {
-        showDialog(command.title,command.description)
-    }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(1f)
-            .height(80.dp)
-            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
-        elevation = 4.dp,
-        backgroundColor = Color.Black,
-        onClick = {
-
-            showDialog.value = true
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(1f)
-                .fillMaxHeight(1f)
-
-        ) {
-            Text(
-                text = command.title,
-                color = Color.White,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp)
-            )
-            Text(
-                text = command.description,
-                color = Color.Gray,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp),
-                maxLines = 2, overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-}
 
 

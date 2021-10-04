@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 @Preview
-fun showDialog(title:String? ="System Commands",description:String?="sadsdsasad"){
+fun showDialog(title:String? ="System commands",description:String?="sadsdsasad"){
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }

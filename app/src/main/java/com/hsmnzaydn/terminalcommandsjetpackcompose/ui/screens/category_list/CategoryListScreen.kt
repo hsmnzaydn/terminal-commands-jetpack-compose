@@ -1,6 +1,7 @@
 package com.hsmnzaydn.terminalcommandsjetpackcompose.ui.screens.category_list
 
 import android.view.View
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,14 +10,19 @@ import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCompositionContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.hsmnzaydn.terminalcommandsjetpackcompose.base.CoreDataState
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.data.entities.CategoryResponse
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.AppBar
+import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.CommandLazyColumn
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.components.LoadingRecipeListShimmer
 import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 
@@ -25,7 +31,10 @@ fun CategoryListScreen(
     navController: NavController,
     categoryListViewModel: CategoryListViewModel
 ) {
-    categoryListViewModel.fetchCategoryList()
+    val isFetchCommandList = remember {
+        mutableStateOf(false)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxHeight(1f)
@@ -33,14 +42,31 @@ fun CategoryListScreen(
             .background(Background)
     ) {
 
-        AppBar("Category",false, {
+        AppBar("Category",navController,false,false, {
+            if(it.length == 0){
+                isFetchCommandList.value = false
+            }else{
+                isFetchCommandList.value = true
+                categoryListViewModel.fetchSearchComamnds(it)
+            }
         }, {
 
         })
-        CategoryListContent(categoryListViewModel,{
-            navController.navigate("commandlist/${it}")
 
-        })
+        if(isFetchCommandList.value){
+            CommandListContent(viewModel = categoryListViewModel)
+        }else{
+            categoryListViewModel.categoryList.value.data?.let {
+                if (it.size == 0){
+                    categoryListViewModel.fetchCategoryList()
+                }
+            }?: kotlin.run {
+                categoryListViewModel.fetchCategoryList()
+            }
+            CategoryListContent(categoryListViewModel,{
+                navController.navigate("commandlist/${it}")
+            })
+        }
 
     }
 }
@@ -65,11 +91,30 @@ fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(category
 
                 }
             }
+            else -> {
+                Toast.makeText(LocalContext.current,value.message?:"",Toast.LENGTH_SHORT).show()
+            }
         }
     }
+}
 
-
-
+@Composable
+fun CommandListContent(viewModel: CategoryListViewModel){
+    with(viewModel.commandList) {
+        when (this.value.status) {
+            CoreDataState.Status.LOADING -> {
+                LoadingRecipeListShimmer(imageHeight = 80.dp)
+            }
+            CoreDataState.Status.SUCCESS -> {
+                this.value.data?.let {
+                    CommandLazyColumn(commandList = it)
+                }
+            }
+            else -> {
+                Toast.makeText(LocalContext.current,value.message?:"",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)

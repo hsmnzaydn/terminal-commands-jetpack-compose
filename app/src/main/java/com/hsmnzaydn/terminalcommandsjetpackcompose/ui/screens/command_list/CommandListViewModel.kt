@@ -9,6 +9,7 @@ import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.data.ent
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Category
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.entities.Command
 import com.hsmnzaydn.terminalcommandsjetpackcompose.features.categories.domain.usecase.CategoriesUseCase
+import com.hsmnzaydn.terminalcommandsjetpackcompose.features.commands.domain.usecase.CommandsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -16,14 +17,30 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CommandListViewModel @Inject constructor(private val categoryUseCase: CategoriesUseCase): ViewModel(){
-    val categoryList: MutableState<CoreDataState<List<Command>>> = mutableStateOf(CoreDataState.loading())
+class CommandListViewModel @Inject constructor(
+    private val categoryUseCase: CategoriesUseCase,
+    private val commandsUseCase: CommandsUseCase
+) : ViewModel() {
 
-    fun fetchCommands(categoryId:String){
+
+    val commandList: MutableState<CoreDataState<List<Command>>> =
+        mutableStateOf(CoreDataState.loading())
+
+    fun fetchCommands(categoryId: String) {
         viewModelScope.launch {
             categoryUseCase.getCommandsOfCategories(categoryId).collect {
                 delay(1200)
-                categoryList.value = it
+                commandList.value = it
+            }
+        }
+    }
+
+    fun fetchSearchComamnds(query: String) {
+        viewModelScope.launch {
+            commandsUseCase.getSearchCommands(query).collect {
+                delay(1200)
+
+                commandList.value = it
             }
         }
     }
