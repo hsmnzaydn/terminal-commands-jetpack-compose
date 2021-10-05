@@ -38,15 +38,19 @@ class MainActivity : ComponentActivity() {
                             categoryListViewModel = hiltViewModel()
                         )
                     }
-                    composable("commandlist/{categoryId}",arguments = listOf(
+                    composable("commandlist/{categoryId}/{categoryName}",arguments = listOf(
                         navArgument("categoryId"){
+                            type = NavType.StringType
+                        },
+                        navArgument("categoryName"){
                             type = NavType.StringType
                         }
                     )) {
                         CommandListScreen(
                             navController = navController,
                             commandListViewModel = hiltViewModel(),
-                            it.arguments?.getString("categoryId", "1")?:""
+                            it.arguments?.getString("categoryId", "1")?:"",
+                            it.arguments?.getString("categoryName", "1")?:""
                         )
                     }
                   /*  composable("search") {

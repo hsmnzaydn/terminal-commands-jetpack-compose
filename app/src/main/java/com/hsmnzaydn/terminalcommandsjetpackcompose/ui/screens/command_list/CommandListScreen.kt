@@ -29,7 +29,8 @@ import com.hsmnzaydn.terminalcommandsjetpackcompose.ui.theme.Background
 fun CommandListScreen(
     navController: NavController,
     commandListViewModel: CommandListViewModel,
-    categoryId: String
+    categoryId: String,
+    categoryName: String
 ) {
     val isFetchCommandList = remember {
         mutableStateOf(false)
@@ -43,7 +44,7 @@ fun CommandListScreen(
             .background(Background)
     ) {
 
-        AppBar("commands", navController,false,true, {
+        AppBar(categoryName, navController,false,true, {
             if(it.length == 0){
                 isFetchCommandList.value = false
             }else{

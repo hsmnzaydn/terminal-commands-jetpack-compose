@@ -63,8 +63,8 @@ fun CategoryListScreen(
             }?: kotlin.run {
                 categoryListViewModel.fetchCategoryList()
             }
-            CategoryListContent(categoryListViewModel,{
-                navController.navigate("commandlist/${it}")
+            CategoryListContent(categoryListViewModel,{categoryId,categoryName ->
+                navController.navigate("commandlist/${categoryId}/${categoryName}")
             })
         }
 
@@ -72,7 +72,7 @@ fun CategoryListScreen(
 }
 
 @Composable
-fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(categoryId:String) -> Unit) {
+fun CategoryListContent(viewModel: CategoryListViewModel,clickListener:(categoryId:String,categoryName:String) -> Unit) {
     with(viewModel.categoryList){
         when(this.value.status){
             CoreDataState.Status.LOADING ->{
@@ -119,7 +119,7 @@ fun CommandListContent(viewModel: CategoryListViewModel){
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ListItemOfCategory(category: Category,clickListener:(categoryId:String) -> Unit) {
+fun ListItemOfCategory(category: Category,clickListener:(categoryId:String,categoryName:String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth(1f)
@@ -128,7 +128,7 @@ fun ListItemOfCategory(category: Category,clickListener:(categoryId:String) -> U
         elevation = 4.dp,
         backgroundColor = Color.Black,
         onClick = {
-            clickListener(category.categoryId)
+            clickListener(category.categoryId,category.categoryName)
         }
     ) {
         Column(
