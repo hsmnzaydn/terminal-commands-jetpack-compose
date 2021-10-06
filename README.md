@@ -18,7 +18,6 @@ A CLI handbook for MacOS&Linux. App using my personality project's API and Jetpa
 - [Kotlin](https://kotlinlang.org/) - %100 Kotlin
 -  [Python](https://www.python.org/) - for create features. For [Script](https://github.com/hsmnzaydn/android-clean-feature-creator)
 - [Jetpack Compose](https://developer.android.com/jetpack/compose) for Declarative UI
-- [Glide](https://google.github.io/accompanist/glide/) for image loading
 - [Coroutines](https://github.com/Kotlin/kotlinx.coroutines) for asynchronous operations
 - [Flow](https://developer.android.com/kotlin/flow)
 - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) and [State](https://developer.android.com/jetpack/compose/state)
